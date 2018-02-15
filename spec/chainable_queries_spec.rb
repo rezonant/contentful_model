@@ -39,7 +39,7 @@ describe ContentfulModel::ChainableQueries do
       end
 
       it 'returns itself' do
-        expect(subject.all).to eq subject
+        expect(subject.all.parameters).to eq Hash.new
       end
     end
 
