@@ -147,6 +147,29 @@ module ContentfulModel
       end
     end
 
+    def where(hash)
+      parms = {}
+
+      hash.each do |k, v|
+        if v.is_a?(Array) 
+          # we need to do an 'in' query
+          parms["fields.#{k.to_s.camelize(:lower)}[in]"] = v.join(",")
+        elsif v.is_a?(String) || v.is_a?(Numeric) || [TrueClass,FalseClass].member?(v.class)
+          # literal match
+          parms["fields.#{k.to_s.camelize(:lower)}"] = v
+        elsif v.is_a?(Hash)
+          # if the search is a hash, use the key to specify the search field operator
+          # For example
+          # Model.where(start_date: {gte: DateTime.now}) => "fields.start_date[gte]" => DateTime.now
+          v.each do |search_predicate, search_value|
+            parms["fields.#{k.to_s.camelize(:lower)}[#{search_predicate}]"] = search_value
+          end
+        end
+      end
+
+      self.params(parms)
+    end
+
     def length 
       self.load.length
     end 
