@@ -3,7 +3,10 @@ module ContentfulModel
     def initialize(referenced_class, parameters=nil)
       @parameters = parameters || {}
       @referenced_class = referenced_class
+      @mutable = false
     end
+
+    attr_accessor :mutable 
 
     def parameters=(value)
       @parameters = value
@@ -25,7 +28,12 @@ module ContentfulModel
     end
 
     def params(options)
-      self.class.new(@referenced_class, @parameters.merge(options))
+      if @mutable 
+        @parameters = @parameters.merge(options)
+        self
+      else 
+        self.class.new(@referenced_class, @parameters.merge(options))
+      end 
     end 
 
     def first
@@ -35,7 +43,7 @@ module ContentfulModel
     ##
     # Advance the offset by N
     def advance(n)
-      offset = self.parameters[:offset] || 0
+      offset = self.parameters[:skip] || 0
       self.offset(offset + n)
     end 
 
@@ -60,7 +68,7 @@ module ContentfulModel
     end
     
     def forty_two 
-      self.advance(42).first
+      self.advance(41).first
     end
 
     def reverse 
@@ -69,7 +77,16 @@ module ContentfulModel
       if order 
         self.params(order: order.split(',').map {|x| x.start_with?('-') ? x[1..-1] : "-#{x}"}.join(','))
       else 
-        self.load.reverse
+
+        if @mutable 
+          @result = self.load.reverse 
+          self 
+        else 
+          q = self.class.new @referenced_class, @parameters
+          q.result = self.load.reverse 
+          q
+        end
+
       end 
     end 
 
@@ -174,5 +191,11 @@ module ContentfulModel
     def client
       @client ||= @referenced_class.send(:client)
     end
+
+    protected 
+
+    def result=(value)
+      @result = value 
+    end 
   end
 end
