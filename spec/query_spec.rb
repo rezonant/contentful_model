@@ -22,12 +22,12 @@ describe ContentfulModel::Query do
       Cat.client = nil
     end
 
-    it '#<< updates parameters' do
+    it '#params creates a new instance' do
       expect(subject.parameters).to eq parameters
 
-      subject << {foo: 'bar'}
-
-      expect(subject.parameters).to eq parameters.merge(foo: 'bar')
+      subquery = subject.params(foo: 'bar')
+      expect(subquery).not_to be subject
+      expect(subquery.parameters).to eq subject.parameters.merge(foo: 'bar')
     end
 
     it '#default_parameters' do
@@ -38,14 +38,6 @@ describe ContentfulModel::Query do
       vcr('client') {
         expect(subject.client).to eq Cat.client
       }
-    end
-
-    it '#reset' do
-      subject << {'foo' => 'bar'}
-
-      subject.reset
-
-      expect(subject.parameters).to eq subject.default_parameters
     end
 
     describe '#execute' do
