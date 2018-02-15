@@ -115,6 +115,11 @@ describe ContentfulModel::ChainableQueries do
         expect(query.parameters).to include('fields.foo[in]' => '1,2,3')
       end
 
+      it 'when field ends in _id, it should expand to .sys.id' do 
+        query = subject.where(foo_id: 'abc')
+        expect(query.parameters).to include('fields.foo.sys.id' => 'abc')
+      end 
+
       it 'when value is a string' do
         query = subject.where(foo: 'bar')
         expect(query.parameters).to include('fields.foo' => 'bar')

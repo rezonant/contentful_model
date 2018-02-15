@@ -151,6 +151,11 @@ module ContentfulModel
       parms = {}
 
       hash.each do |k, v|
+
+        if k.to_s.end_with?('_id')
+          k = "#{k.to_s.chomp('_id')}.sys.id"
+        end 
+
         if v.is_a?(Array) 
           # we need to do an 'in' query
           parms["fields.#{k.to_s.camelize(:lower)}[in]"] = v.join(",")
