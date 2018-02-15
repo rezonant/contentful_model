@@ -32,6 +32,47 @@ module ContentfulModel
       self.params(limit: 1).load.first
     end
 
+    ##
+    # Advance the offset by N
+    def advance(n)
+      offset = self.parameters[:offset] || 0
+      self.offset(offset + n)
+    end 
+
+    def second 
+      self.advance(1).first
+    end
+
+    def third
+      self.advance(2).first
+    end 
+
+    def fourth
+      self.advance(3).first
+    end 
+
+    def fifth
+      self.advance(4).first
+    end 
+
+    def last
+      self.reverse.first
+    end
+    
+    def forty_two 
+      self.advance(42).first
+    end
+
+    def reverse 
+      order = self.parameters[:order]
+
+      if order 
+        self.params(order: order.split(',').map {|x| x.start_with?('-') ? x[1..-1] : "-#{x}"}.join(','))
+      else 
+        self.load.reverse
+      end 
+    end 
+
     def offset(n)
       self.params(skip: n)
     end
@@ -93,10 +134,42 @@ module ContentfulModel
       self.load.length
     end 
 
+    def each
+      self.load.each do |i|
+        yield i 
+      end 
+    end 
+
+    def map 
+      self.load.map do |i|
+        yield i
+      end 
+    end 
+
+    def select 
+      self.load.select do |i|
+        yield i
+      end 
+    end 
+
+    def reject
+      self.load.reject do |i|
+        yield i
+      end 
+    end 
+
+    def to_a
+      self.load.to_a
+    end
+
     def load 
       return @result if defined?(@result)
       @result = self.execute
     end 
+
+    def [](index)
+      self.load[index]
+    end
 
     def client
       @client ||= @referenced_class.send(:client)
