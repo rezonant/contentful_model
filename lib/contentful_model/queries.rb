@@ -11,7 +11,7 @@ module ContentfulModel
 
       def params(options)
         q = self.query
-        q.parameters = options
+        q.parameters = (q.parameters || {}).merge(options)
         q
       end
 
