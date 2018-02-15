@@ -10,7 +10,9 @@ module ContentfulModel
       end
 
       def params(options)
-        Query.new(self, options)
+        q = self.query
+        q.parameters = options
+        q
       end
 
       def load
