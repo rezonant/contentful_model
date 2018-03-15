@@ -31,13 +31,21 @@ module ContentfulModel
     def override_getters
       sys.keys.each do |name|
         define_singleton_method name do
-          self.class.coerce_value(name, sys[name])
+          if self.class.respond_to? :coerce_value_for_entry
+            self.class.coerce_value_for_entry(name, sys[name], self)
+          else 
+            self.class.coerce_value(name, sys[name])
+          end 
         end
       end
 
       fields.keys.each do |name|
         define_singleton_method name do
-          result = self.class.coerce_value(name, fields[name])
+          if self.class.respond_to? :coerce_value_for_entry
+            result = self.class.coerce_value_for_entry(name, sys[name], self)
+          else 
+            result = self.class.coerce_value(name, fields[name])
+          end 
 
           if result.is_a?(Array)
             result.reject! { |r| r.is_a?(Contentful::Link) || (r.respond_to?(:invalid?) && r.invalid?) }
