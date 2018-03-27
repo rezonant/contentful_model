@@ -14,7 +14,7 @@ module ContentfulModel
       published_entry = self.class.client.entry(id)
 
       # Bail if we couldn't find the entry (can happen when its been deleted)
-      raise Contentful::Management::NotFound unless published_entry
+      return nil unless published_entry
       
       fields.each do |field, value|
         entry_to_update.send(
