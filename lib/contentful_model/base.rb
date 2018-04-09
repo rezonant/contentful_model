@@ -88,10 +88,24 @@ module ContentfulModel
       def client
         # add an entry mapping for this content type
         self.add_entry_mapping
+
+        current_space = ContentfulModel.configuration.space 
+        @configured_space = nil unless defined?(@configured_space)
+
         if ContentfulModel.use_preview_api
-          @preview_client ||= ContentfulModel::Client.new(ContentfulModel.configuration.to_hash)
+          if !@preview_client || @configured_space != current_space
+            @preview_client = ContentfulModel::Client.new(ContentfulModel.configuration.to_hash)
+            @configured_space = ContentfulModel.configuration.space
+          end 
+
+          @preview_client
         else
-          @client ||= ContentfulModel::Client.new(ContentfulModel.configuration.to_hash)
+          if !@client || @configured_space != current_space
+            @client = ContentfulModel::Client.new(ContentfulModel.configuration.to_hash)
+            @configured_space = ContentfulModel.configuration.space
+          end 
+
+          @client
         end
       end
 
