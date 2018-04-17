@@ -42,7 +42,7 @@ module ContentfulModel
       fields.keys.each do |name|
         define_singleton_method name do
           if self.class.respond_to? :coerce_value_for_entry
-            result = self.class.coerce_value_for_entry(name, sys[name], self)
+            result = self.class.coerce_value_for_entry(name, fields[name], self)
           else 
             result = self.class.coerce_value(name, fields[name])
           end 
