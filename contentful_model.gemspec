@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
 
   s.add_dependency "contentful", '~> 2.0'
-  s.add_dependency "contentful-management", '~> 1.0'
+  s.add_dependency "contentful-management", '~> 2.10.0'
 
   s.add_dependency "redcarpet"
   s.add_dependency "activesupport"
